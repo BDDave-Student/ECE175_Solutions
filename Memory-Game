@@ -3,6 +3,7 @@
 #define ROW 4
 #define COL 5
 
+
 void print_board(int board[][COL], int show[][COL]);
 void generate_game(int x[][COL], int choice);
 
@@ -166,15 +167,12 @@ void initGame() {
 	printf("Game Board has been generated.\n");
 	print_board(gameBoard, showBoard);
 
-	while (nextRound != 'q' && nextRound != 'Q') {
-		while (matchCount != 10) {
+	while (nextRound != 'q' || matchCount == 10) {
 			if (userChoice(gameBoard, showBoard) == 1) {  // match found
 				matchCount++;
 			}
 			printf("Continue? (q to quit)");
 			scanf_s(" %c%*c", &nextRound);
-		}
-		
 	} //quit at any time
 
 	if (matchCount == 10) {
@@ -186,7 +184,7 @@ void main() {
 	char rePlay = 'y';
 	while (rePlay != 'q') {
 		initGame();
-		printf("Would you like to replay?\n");
+		printf("Would you like to replay? (q to quit)\n");
 		scanf_s(" %c%*c", &rePlay);
 	}
 	printf("Goodbye.");
