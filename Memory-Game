@@ -1,0 +1,193 @@
+#include <stdio.h>
+
+#define ROW 4
+#define COL 5
+
+void print_board(int board[][COL], int show[][COL]);
+void generate_game(int x[][COL], int choice);
+
+void print_board(int board[][COL], int show[][COL]) {
+
+	for (int x = 0; x <= ROW-1; x++) { // Rows (X-axis)
+		for (int y = 0; y <= COL - 1; y++) { //Columns (Y-axis)
+			//if the element in the 2D array show is 1, print value of 2D array x at the same element.
+			//Otherwise, print ?
+			if (show[x][y] == 1) {
+				printf("%d ", board[x][y]);
+			}
+			else {
+				printf("? ");
+			}
+		}
+		printf("\n");
+	 }
+	printf("====================\n");
+}
+void generate_showBoard(int board[][COL]) {
+	for (int x = 0; x <= ROW - 1; x++) { // Rows (X-axis)
+		for (int y = 0; y <= COL-1; y++) { //Columns (Y-axis)
+			board[x][y] = 0;
+		}
+	}
+}
+void generate_game(int x[][COL], int choice) {
+	int count = 0;
+	int i, j, r, c;
+	if (choice == 1) {//fixed game - for code development
+		x[0][0] = 3; x[0][1] = 2; x[0][2] = 2; x[0][3] = 1; x[0][4] = 4;
+		x[1][0] = 3; x[1][1] = 6; x[1][2] = 6; x[1][3] = 1; x[1][4] = 4;
+		x[2][0] = 9; x[2][1] = 5; x[2][2] = 8; x[2][3] = 5; x[2][4] = 0;
+		x[3][0] = 0; x[3][1] = 7; x[3][2] = 8; x[3][3] = 7; x[3][4] = 9;
+	}
+	else if (choice == 2) {
+
+	}
+	else { // use rand()
+		for (i = 0; i < ROW; i++)
+			for (j = 0; j < COL; j++)
+				x[i][j] = 100; //100 represent empty element
+		for (i = 0; i < 10; i++) { //fill the board with value i from 0 -9
+			count = 1;
+			do {
+				r = rand() % ROW; //generate 0 - (ROW-1)
+				c = rand() % COL; //generate 0 - (COL-1)
+				if (x[r][c] == 100) {
+					x[r][c] = i;
+					count = count + 1;
+				}
+			} while (count < 3);
+		}
+	}
+}
+
+int validateRound(int board[][COL], int show[][COL], int row1, int col1, int row2, int col2) {
+	int match;
+	if (board[row1][col1] == board[row2][col2]) {
+		show[row1][col1] = 1;
+		show[row2][col2] = 1;
+		print_board(board, show);
+		printf("%d %d - Match found.", board[row1][col1], board[row2][col2]);
+		match = 1;
+	}
+	else {
+		show[row1][col1] = 1;
+		show[row2][col2] = 1;
+		print_board(board, show);
+		printf("%d %d - No Match found.", board[row1][col1], board[row2][col2]);
+		show[row1][col1] = 0;
+		show[row2][col2] = 0;
+		match = 0;
+	}
+	printf("\n");
+	return match;
+}
+
+int userChoice(int board[][COL], int show[][COL]) {
+	char userChoice[4]; // [int, space, int, \n]
+	int validRow = -1;  //valid variables
+	int validCol = -1;  
+	int userRow1 = -1;  //First
+	int userCol1 = -1; 
+	int userRow2 = -1;  //Second
+	int userCol2 = -1;
+	int tempRow = 0;
+	int tempCol = 0;
+	int match = 0;     // used for match or not
+
+	while ( (validRow == -1) && (validCol = -1) ) {
+		printf("Row must be between 1-4, Column must be between 1-5\n");
+		printf("Enter first position | row col: ");
+		gets(userChoice);
+		userRow1 = (int)userChoice[0] - 48;
+		userCol1 = (int)userChoice[2] - 48;  //User input + convert to int
+
+		tempRow = userRow1 - 1;
+		tempCol = userCol1 - 1;
+		if (show[tempRow][tempCol] == 1) {  //validity check: Already revealed
+			printf("Selection already matched.\n");
+		}
+		else {
+			if (userRow1 > 0 && userRow1 < 5) {  //validity check 1-4
+				validRow = 0;
+			}
+			if (userCol1 > 0 && userCol1 < 6) { //validity check 1-5
+				validCol = 0;
+			}
+		}
+
+	} //end userChoice1 check
+	printf("\n");
+
+	validRow = -1;
+	validCol = -1;
+	while ((validRow == -1) && (validCol = -1)) {
+		printf("Row must be between 1-4, Column must be between 1-5\n");
+		printf("Enter second position | row col: ");
+		gets(userChoice);
+		userRow2 = (int)userChoice[0] - 48;
+		userCol2 = (int)userChoice[2] - 48; //User input + convert to int
+
+		if ((userRow2 == userRow1) && (userCol2 == userCol1)) {
+			printf("Your inputs cannot match.\n");
+		}
+		else{
+			tempRow = userRow1 - 1;
+			tempCol = userCol1 - 1;
+			if (show[tempRow][tempCol] == 1) {
+				printf("Selection already matched.\n");
+			}
+			else {
+				if (userRow2 > 0 && userRow2 < 5) {
+					validRow = 0;
+				}
+				if (userCol2 > 0 && userCol2 < 6) {
+					validCol = 0;
+				}
+			}
+		} //validity check
+	} //end userChoice2 check
+	printf("\n");
+	userRow1 = userRow1 - 1;  // Correct array range offset
+	userCol1 = userCol1 - 1;
+	userRow2 = userRow2 - 1;
+	userCol2 = userCol2 - 1;
+	//validate round
+	return validateRound(board, show, userRow1, userCol1, userRow2, userCol2);
+}
+
+void initGame() {
+	int gameBoard[ROW][COL];
+	int showBoard[ROW][COL];
+	int matchCount = 0;
+	char nextRound = 'a';
+	generate_game(gameBoard, 1);  //generate fixed game
+//generate_game(gameBoard[][COL], 2 );  //generate randomized game
+	generate_showBoard(showBoard);
+	printf("Game Board has been generated.\n");
+	print_board(gameBoard, showBoard);
+
+	while (nextRound != 'q' && nextRound != 'Q') {
+		while (matchCount != 10) {
+			if (userChoice(gameBoard, showBoard) == 1) {  // match found
+				matchCount++;
+			}
+			printf("Continue? (q to quit)");
+			scanf_s(" %c%*c", &nextRound);
+		}
+		
+	} //quit at any time
+
+	if (matchCount == 10) {
+		printf("Congratulations, you win the game");
+	}
+}
+
+void main() {
+	char rePlay = 'y';
+	while (rePlay != 'q') {
+		initGame();
+		printf("Would you like to replay?\n");
+		scanf_s(" %c%*c", &rePlay);
+	}
+	printf("Goodbye.");
+}
