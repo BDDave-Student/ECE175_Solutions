@@ -388,16 +388,15 @@ void initGame() {
 
 // Main control starting driver
 void main() {
-		char rePlay = 'y';
-		while (rePlay != 'q') {
-			if (chooseWordSet() == 0) {
-				printf("Let's play Word Scramble\n");
-				initGame();
-			}
-			printf("Would you like to replay? (q to quit)\n");
-			scanf(" %c%*c", &rePlay);
+	char rePlay = 'y';
+	while (rePlay != 'q') {
+		if (chooseWordSet() == 0) {
+			printf("Let's play Word Scramble\n");
+			initGame();
 		}
-	
+		printf("Would you like to replay? (q to quit)\n");
+		scanf(" %c%*c", &rePlay);
+	}
 	fclose(input);
 	printf("Goodbye.");
 }
