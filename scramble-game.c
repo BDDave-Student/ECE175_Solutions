@@ -25,32 +25,44 @@ FILE* input = NULL;
 
 /* Linked List Functions */
 // Add node to tail
-wordnode* addNode() {
-	wordnode* head = NULL, * temp = NULL, * tail = NULL;
-	temp = (wordnode*)malloc(sizeof(wordnode));
-	// fscanf values into temp node
-	if (head == NULL) {
-		head = temp; // create head and set values
-	}
-	else {
-		tail->next = temp; //set values
-	}
-	tail = temp;  //next pointer setup
-	tail->next = NULL;
-	temp = (wordnode*)malloc(sizeof(wordnode));
-
-	return head;
+void addNode(wordnode** listNode, char word[15], int point) {
+	wordnode* newNode = NULL;
+	newNode = (wordnode*)malloc(sizeof(wordnode));
+	strcpy(newNode->word, word);
+	newNode->point = point;
+	
+	newNode->next = *listNode;
+	*listNode = newNode;
 }
 
-wordnode* removeNode(wordnode* current, char word[15]) {
-	wordnode* temp = NULL;
-	temp = (wordnode*)malloc(sizeof(wordnode));
-	while (strcmp(current->word, word) != 0) {
-		current = current->next;
+void* removeNode(wordnode** head, wordnode** tail, char word[15]) {
+	wordnode* deleted = *head;
+	wordnode* previous = *head;
+
+	while (strcmp(deleted->word, word) != 0 && deleted != NULL) {
+		deleted = deleted->next;
 	}
-	temp = current;
-	current = temp->next;
-	free(temp);
+	if (deleted == NULL) {
+
+	}
+	else {
+		if (deleted == *head) {
+			*head = deleted->next;
+		}
+		else {
+			while (previous->next != deleted) {
+				previous = previous->next;  //  finds node before deleted node
+			}
+			if (deleted == *tail) {
+				*tail = previous;  //  if tail, update
+				(*tail)->next = NULL;
+			}
+			else {
+				previous->next = deleted->next;
+			}
+			free(deleted);
+		}
+	}
 }
 
 // Returns node->word by index location
@@ -83,18 +95,17 @@ int returnPoint(wordnode* current, int index) {
 	return current->point;
 }
 
-// Returns 0 or 1 whether word exists in Linked List
+// Returns node whether word exists in Linked List
 wordnode* findNode(wordnode* current, char word[15]) {
-	int value = 1;
 	while (current != NULL) {
 		if (strcmp(word, current->word) == 0) {
-			return 0;
-			break;
+			return current;
 		}
 		current = current->next;
 	}
-
-	return current;
+	if (current == NULL) {
+		return NULL;
+	}
 }
 
 // Returns length of word
@@ -122,6 +133,30 @@ void printWordSet(wordnode* current) {
 		printNode(current);
 		current = current->next;
 	}
+}
+
+// Print player linked list
+void printPlayerSet(wordnode* correct, wordnode* wrong) {
+	
+	printf("Correct Guess\tWrong Guess\n");
+	while (correct != NULL || wrong != NULL) {
+		if (correct == NULL) {
+			printf(" \t \t %s", wrong->word);
+			wrong = wrong->next;
+		}
+		else if (wrong == NULL) {
+			printf("%s", correct->word);
+			correct = correct->next;
+		}
+		else {
+			printf("%s\t \t %s", correct->word, wrong->word);
+			correct = correct->next;
+			wrong = wrong->next;
+		}
+		printf("\n");
+
+	}
+	printf("\n");
 }
 
 // Functions used to set up game dictionary
@@ -202,17 +237,24 @@ void clueOutput(wordnode* current, int available) {
 			(count == available - 1)) {
 			strcpy(clueWord, returnWord(current, count));
 			int control = 0;
+			int vowelCount = 0;
+
 			for (int i = 0; clueWord[i] != '\0'; i++) {
-				if (clueWord[i] == 'a') {
+				if ((clueWord[i] == 'a') && (vowelCount == 0) ){
 					printf("%c", 'a');
-				} else if (clueWord[i] == 'e') {
+					vowelCount++;
+				} else if ((clueWord[i] == 'e') && (vowelCount == 0)) {
 					printf("%c", 'e');
-				} else if (clueWord[i] == 'i') {
+					vowelCount++;
+				} else if ((clueWord[i] == 'i') && (vowelCount == 0)) {
 					printf("%c", 'i');
-				} else if (clueWord[i] == 'o') {
+					vowelCount++;
+				} else if ((clueWord[i] == 'o') && (vowelCount == 0)) {
 					printf("%c", 'o');
-				} else if (clueWord[i] == 'u') {
+					vowelCount++;
+				} else if ((clueWord[i] == 'u') && (vowelCount == 0)) {
 					printf("%c", 'u');
+					vowelCount++;
 				} else {
 					printf("-");
 				}
@@ -222,11 +264,11 @@ void clueOutput(wordnode* current, int available) {
 		}
 		count++;
 	}
-
+	printf("\n");
 }
 
 char* playerChoice(char hand[15]) {
-	int count = 0,  valid = 1, length = strLength(hand);
+	int count = 0, valid = 1, length = strLength(hand), playerLength = 0;
 	char playerGuess[15];
 
 	while (valid != 0) {
@@ -238,10 +280,15 @@ char* playerChoice(char hand[15]) {
 				playerGuess[i] = '\0';
 			}
 		}
-		if (strLength(playerGuess) > 9) {
+		
+		playerLength = strLength(playerGuess);
+		if (playerLength >= 9) {
 			printf("Entry was too long.\n");
 			valid = 1;
-		} else {
+		}else if (playerLength <= 3){
+			printf("Entry was too short.\n");
+			valid = 1;
+		}else {
 			valid = 0;
 		}
 	}
@@ -249,40 +296,6 @@ char* playerChoice(char hand[15]) {
 	return playerGuess;
 }
 
-int roundResults(wordnode* current, wordnode* correct, wordnode* wrong, char word[15]) {
-	int found = 1, wordScore = 0;
-	while (current != NULL) {
-		found = strcmp(current->word, word);
-		if (found = 0) {
-			wordScore = current->point;
-			break;
-		}
-		else {
-			current = current->next;
-		}
-
-	}
-
-	return wordScore;
-}
-
-int roundFormat(wordnode* current, char hand[15], int score) {
-	wordnode *correct = NULL, *wrong = NULL;
-	int roundScore = 0;
-	int roundAvail = availableWords(current);
-	char playerGuess[15];
-
-	printf("Current Points: %d\n", score);
-	
-	printHand(hand);
-
-	printf("There are %d words that you can guess.\n", roundAvail);
-	clueOutput(current, roundAvail);
-	strcpy(playerGuess, playerChoice(hand));
-	roundScore = roundResults(current, correct, wrong, playerGuess);
-
-	return score + roundScore;
-}
 
 /* Functions used to manage player hand */
 // Output hand
@@ -313,7 +326,7 @@ char* scrambleHand(char hand[15]) {
 	char temp;
 	
 	control = strLength(hand);
-
+	//control = 15;
 	for (int i = 0; i < 15; i++) { // random amount of time to shuffle
 		while (end == init) {  // select a first and second char to swap
 			init = rand() % control - 1;
@@ -342,28 +355,74 @@ char* createHand(char word[15]) {
 
 /* Game Driving Functions */
 void endGame(wordnode* current, int score) {
-	// did they win
-	// display remaining words left
+	wordnode* countList = NULL;
+	countList = current;
 	int remainingCount = availableWords(current);
-	printf("%d Words that were not guessed:\n", remainingCount);
-	while (current != NULL) {
-		printf("%s\t", current->word);
-		current = current->next;
+	if (countList == NULL) {
+		printf("Congratulations.  All words were guessed.\n");
+	}
+	else {
+		printf("%d Words that were not guessed:\n", remainingCount);
+		while (countList != NULL) {
+			printf("%s\t", countList->word);
+			countList = countList->next;
+		}
 	}
 	printf("\n");
+	printf("Your total score is: %d\n", score);
+
 }
 
 void initGame() {
 	int gameOver = 1, gameScore = 0;	
 	char keyInput;
 	wordnode* gameNode = NULL, * correct = NULL, * wrong = NULL;
-
+	wordnode* roundNode = NULL, * tail = NULL;
 	gameNode = loadWordSet();
 	char playerHand[15];
 	strcpy(playerHand, createHand(gameNode->word));
 
 	while (gameOver != 0) {
-		gameScore = roundFormat(gameNode, playerHand, gameScore);
+		int roundScore = 0, found = 1;
+		int roundAvail = availableWords(gameNode);
+		char playerGuess[15];
+
+		printHand(playerHand);
+
+		printf("There are %d words that you can guess.\n", roundAvail);
+
+		clueOutput(gameNode, roundAvail);
+		
+		printPlayerSet(correct, wrong);
+
+		printf("Current Points: %d\n", gameScore);
+		
+		strcpy(playerGuess, playerChoice(playerHand));
+
+		if (findNode(correct, playerGuess) != NULL) {
+			printf("%s is already correctly guessed.\n", playerGuess);
+		}
+		else if(findNode(wrong, playerGuess) != NULL) {
+			printf("%s is already incorrectly guessed.\n", playerGuess);
+		} else {
+			roundNode = findNode(gameNode, playerGuess);
+			if (roundNode != NULL) {
+				printf("Congrats.  Match found.\n");
+				tail = gameNode;
+				while (tail->next != NULL) {
+					tail = tail->next;
+				}
+				roundScore = roundNode->point;
+				addNode(&correct, playerGuess, roundScore);
+				removeNode(&gameNode, &tail, playerGuess);
+			}
+			else {
+				printf("Sorry.  Match not found.\n");
+				addNode(&wrong, playerGuess, 0);
+			}
+		}
+
+		gameScore = gameScore + roundScore;
 
 		printf("Continue playing (Q/q to Quit)? ");
 		scanf(" %c%*c", &keyInput);
@@ -379,11 +438,17 @@ void initGame() {
 				scrambleHand(playerHand);
 			}
 		}
+
+		if (gameNode == NULL) {
+			gameOver = 0;
+		}
 	}
 	endGame(gameNode, gameScore);
 	free(gameNode);
 	free(correct);
 	free(wrong);
+	free(roundNode);
+	free(tail);
 }
 
 // Main control starting driver
@@ -394,9 +459,10 @@ void main() {
 			printf("Let's play Word Scramble\n");
 			initGame();
 		}
-		printf("Would you like to replay? (q to quit)\n");
+			printf("Would you like to replay? (q to quit)\n");
 		scanf(" %c%*c", &rePlay);
 	}
+	
 	fclose(input);
 	printf("Goodbye.");
 }
