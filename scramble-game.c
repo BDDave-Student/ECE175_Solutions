@@ -118,6 +118,22 @@ int strLength(char word[15]) {
 	return length;
 }
 
+// Valid character
+int checkChar(char letter, char word[15], int repeat) {
+	int valid = 1;
+	for (int i = 0; i < 15; i++) {
+		if (letter == word[i]) {
+			repeat--;
+			if (repeat == 0){
+				return valid = 0;
+				break;
+			}
+		}
+	}
+
+	return valid;
+}
+
 // Print individual node data
 void printNode(wordnode* current) {
 	printf("%s %d\n", current->word, current->point);
@@ -289,7 +305,16 @@ char* playerChoice(char hand[15]) {
 			printf("Entry was too short.\n");
 			valid = 1;
 		}else {
-			valid = 0;
+			int repeatCount = 0;
+			for (int i = 0; i < playerLength; i++) {
+				repeatCount = 0;
+				for (int j = 0; j < playerLength; j++) {
+					if (playerGuess[i] == playerGuess[j]) { // Check within itself for repeat letters
+						repeatCount++;
+					}
+				}
+				valid = checkChar(playerGuess[i], hand, repeatCount);
+			}
 		}
 	}
 	
