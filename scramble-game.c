@@ -30,6 +30,7 @@ void addNode(wordnode** listNode, char word[15], int point) {
 	newNode = (wordnode*)malloc(sizeof(wordnode));
 	strcpy(newNode->word, word);
 	newNode->point = point;
+
 	newNode->next = *listNode;
 	*listNode = newNode;
 }
@@ -222,7 +223,7 @@ wordnode* loadWordSet() {
 	return head;
 }
 
-// Returns amount of nodes found in linked list
+
 int availableWords(wordnode* current) {
 	int count = 0;
 	while (current != NULL) {
@@ -233,7 +234,6 @@ int availableWords(wordnode* current) {
 	return count;
 }
 
-// Outputs clues based off remaining words left in linked list
 void clueOutput(wordnode* current, int available) {
 	int clueLoop = 0;
 	if (available >= 5) {
@@ -288,7 +288,6 @@ void clueOutput(wordnode* current, int available) {
 	printf("\n");
 }
 
-// Returns string of player's guess if passes check on length and characters entered
 char* playerChoice(char hand[15]) {
 	int count = 0, valid = 1, length = strLength(hand), playerLength = 0;
 	char playerGuess[15];
@@ -332,6 +331,7 @@ char* playerChoice(char hand[15]) {
 	return playerGuess;
 }
 
+
 /* Functions used to manage player hand */
 // Output hand
 void printHand(char hand[15]) {
@@ -352,6 +352,7 @@ void printHand(char hand[15]) {
 		printf("--- ");
 	}
 	printf("\n");
+
 }
 
 // Scrambles letters for player hand
@@ -482,7 +483,6 @@ void initGame() {
 	free(gameNode);
 	free(correct);
 	free(wrong);
-	free(roundNode);
 	free(tail);
 }
 
