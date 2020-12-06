@@ -30,7 +30,7 @@ void addNode(wordnode** listNode, char word[15], int point) {
 	newNode = (wordnode*)malloc(sizeof(wordnode));
 	strcpy(newNode->word, word);
 	newNode->point = point;
-	
+
 	newNode->next = *listNode;
 	*listNode = newNode;
 }
@@ -124,7 +124,7 @@ int checkChar(char letter, char word[15], int repeat) {
 	for (int i = 0; i < 15; i++) {
 		if (letter == word[i]) {
 			repeat--;
-			if (repeat == 0){
+			if (repeat == 0) {
 				return valid = 0;
 				break;
 			}
@@ -144,8 +144,8 @@ void printWordSet(wordnode* current) {
 	char word[15];
 	int point;
 	while (current != NULL) {
-//		strcpy(word, returnWord(current));
-//		point = returnPoint(current);
+		//		strcpy(word, returnWord(current));
+		//		point = returnPoint(current);
 		printNode(current);
 		current = current->next;
 	}
@@ -153,7 +153,7 @@ void printWordSet(wordnode* current) {
 
 // Print player linked list
 void printPlayerSet(wordnode* correct, wordnode* wrong) {
-	
+
 	printf("Correct Guess\tWrong Guess\n");
 	while (correct != NULL || wrong != NULL) {
 		if (correct == NULL) {
@@ -256,22 +256,27 @@ void clueOutput(wordnode* current, int available) {
 			int vowelCount = 0;
 
 			for (int i = 0; clueWord[i] != '\0'; i++) {
-				if ((clueWord[i] == 'a') && (vowelCount == 0) ){
+				if ((clueWord[i] == 'a') && (vowelCount == 0)) {
 					printf("%c", 'a');
 					vowelCount++;
-				} else if ((clueWord[i] == 'e') && (vowelCount == 0)) {
+				}
+				else if ((clueWord[i] == 'e') && (vowelCount == 0)) {
 					printf("%c", 'e');
 					vowelCount++;
-				} else if ((clueWord[i] == 'i') && (vowelCount == 0)) {
+				}
+				else if ((clueWord[i] == 'i') && (vowelCount == 0)) {
 					printf("%c", 'i');
 					vowelCount++;
-				} else if ((clueWord[i] == 'o') && (vowelCount == 0)) {
+				}
+				else if ((clueWord[i] == 'o') && (vowelCount == 0)) {
 					printf("%c", 'o');
 					vowelCount++;
-				} else if ((clueWord[i] == 'u') && (vowelCount == 0)) {
+				}
+				else if ((clueWord[i] == 'u') && (vowelCount == 0)) {
 					printf("%c", 'u');
 					vowelCount++;
-				} else {
+				}
+				else {
 					printf("-");
 				}
 			}
@@ -296,15 +301,17 @@ char* playerChoice(char hand[15]) {
 				playerGuess[i] = '\0';
 			}
 		}
-		
+
 		playerLength = strLength(playerGuess);
 		if (playerLength >= 9) {
 			printf("Entry was too long.\n");
 			valid = 1;
-		}else if (playerLength <= 3){
+		}
+		else if (playerLength <= 3) {
 			printf("Entry was too short.\n");
 			valid = 1;
-		}else {
+		}
+		else {
 			int repeatCount = 0;
 			for (int i = 0; i < playerLength; i++) {
 				repeatCount = 0;
@@ -314,10 +321,13 @@ char* playerChoice(char hand[15]) {
 					}
 				}
 				valid = checkChar(playerGuess[i], hand, repeatCount);
+				if (valid == 1) {
+					break;
+				}
 			}
 		}
 	}
-	
+
 	return playerGuess;
 }
 
@@ -326,7 +336,7 @@ char* playerChoice(char hand[15]) {
 // Output hand
 void printHand(char hand[15]) {
 	int control = 0;
-	
+
 	control = strLength(hand);
 	for (int i = 0; i < control; i++) {
 		printf("--- ");
@@ -347,9 +357,9 @@ void printHand(char hand[15]) {
 
 // Scrambles letters for player hand
 char* scrambleHand(char hand[15]) {
-	int init = 0, end = 0, count= 0, control = 0;
+	int init = 0, end = 0, count = 0, control = 0;
 	char temp;
-	
+
 	control = strLength(hand);
 	//control = 15;
 	for (int i = 0; i < 15; i++) { // random amount of time to shuffle
@@ -399,7 +409,7 @@ void endGame(wordnode* current, int score) {
 }
 
 void initGame() {
-	int gameOver = 1, gameScore = 0;	
+	int gameOver = 1, gameScore = 0;
 	char keyInput;
 	wordnode* gameNode = NULL, * correct = NULL, * wrong = NULL;
 	wordnode* roundNode = NULL, * tail = NULL;
@@ -417,19 +427,20 @@ void initGame() {
 		printf("There are %d words that you can guess.\n", roundAvail);
 
 		clueOutput(gameNode, roundAvail);
-		
+
 		printPlayerSet(correct, wrong);
 
 		printf("Current Points: %d\n", gameScore);
-		
+
 		strcpy(playerGuess, playerChoice(playerHand));
 
 		if (findNode(correct, playerGuess) != NULL) {
 			printf("%s is already correctly guessed.\n", playerGuess);
 		}
-		else if(findNode(wrong, playerGuess) != NULL) {
+		else if (findNode(wrong, playerGuess) != NULL) {
 			printf("%s is already incorrectly guessed.\n", playerGuess);
-		} else {
+		}
+		else {
 			roundNode = findNode(gameNode, playerGuess);
 			if (roundNode != NULL) {
 				printf("Congrats.  Match found.\n");
@@ -452,7 +463,7 @@ void initGame() {
 		printf("Continue playing (Q/q to Quit)? ");
 		scanf(" %c%*c", &keyInput);
 		printf("\n");
-		if ( (keyInput == 'Q') || (keyInput == 'q') ) {
+		if ((keyInput == 'Q') || (keyInput == 'q')) {
 			gameOver = 0;
 		}
 		else {
@@ -484,10 +495,10 @@ void main() {
 			printf("Let's play Word Scramble\n");
 			initGame();
 		}
-			printf("Would you like to replay? (q to quit)\n");
+		printf("Would you like to replay? (q to quit)\n");
 		scanf(" %c%*c", &rePlay);
 	}
-	
+
 	fclose(input);
 	printf("Goodbye.");
 }
