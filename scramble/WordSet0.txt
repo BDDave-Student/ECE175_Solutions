@@ -1,0 +1,7 @@
+scramble 80
+clambers 80
+amblers 70
+becalms 70
+sera 10
+slab 10
+slam 10
